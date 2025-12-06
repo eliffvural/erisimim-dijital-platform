@@ -3,7 +3,7 @@
 const { Sequelize } = require('sequelize');
 
 // **ÖNEMLİ:** Buradaki bilgileri kendi PostgreSQL kurulumunuza göre doldurun.
-const sequelize = new Sequelize('erisimim_db', 'postgres', 'sifreniz', {
+const sequelize = new Sequelize('erisimim_db', 'postgres', 'Eelf.7821+', {
     host: 'localhost',
     dialect: 'postgres', // PostgreSQL kullanıyoruz
     logging: false // Konsolda SQL sorgularını göstermemek için

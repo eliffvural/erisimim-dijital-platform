@@ -1,8 +1,10 @@
-// backend/server.js (Güncellenmiş hali)
+// backend/server.js
 
 const express = require('express');
+const cors = require('cors'); // CORS middleware'i
 const { connectDB, sequelize } = require('./config/db'); 
-const Resource = require('./models/Resource'); // Yeni eklenen satır
+const resourceRoutes = require('./routes/resourceRoutes'); // Rotalar
+const Resource = require('./models/Resource'); 
 
 // Veritabanı bağlantısını başlat
 connectDB();
@@ -15,4 +17,19 @@ sequelize.sync({ alter: true })
     .catch(err => console.log("Veritabanı senkronizasyonunda hata:", err));
 
 const app = express();
-// ... Diğer app ayarları ve dinleme kodu
+const PORT = process.env.PORT || 5000;
+
+// Middleware'ler
+app.use(cors()); // Frontend'den gelen istekleri kabul et
+app.use(express.json()); // JSON formatındaki isteği okuyabilmek için
+
+// API Rotaları
+app.use('/api/resources', resourceRoutes); // Kaynak rotalarını ekle
+
+app.get('/', (req, res) => {
+    res.send('API çalışıyor...');
+});
+
+app.listen(PORT, () => {
+    console.log(`Sunucu http://localhost:${PORT} adresinde çalışıyor`);
+});
