@@ -3,40 +3,46 @@ import { useEffect, useState } from 'react';
 
 export default function ResourceList({ searchTerm }) {
   const [resources, setResources] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await axios.get('http://localhost:5000/api/resources', {
-          params: { search: searchTerm }
-        });
-        setResources(res.data);
-      } catch (err) {
-        console.error("Veri çekilemedi:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getData();
+    // API'den verileri çek
+    axios.get('http://localhost:5000/api/resources', {
+      params: { search: searchTerm }
+    })
+    .then(res => setResources(res.data))
+    .catch(err => console.error("Hata:", err));
   }, [searchTerm]);
 
-  if (loading) return <p className="text-center p-10">Yükleniyor...</p>;
-
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {resources.map(res => (
-        <div key={res.id} className="p-4 border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-xl font-bold text-indigo-800 mb-2">{res.title}</h3>
-          <p className="text-gray-600 mb-4">{res.description}</p>
-          <div className="flex gap-2">
-            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{res.engel_turu}</span>
-            <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{res.ders_konusu}</span>
-          </div>
-          <a href={res.url} target="_blank" className="inline-block mt-4 text-indigo-600 underline">Kaynağa Git</a>
-        </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {resources.map(item => (
+       // Kart yapısı için item.map içindeki return kısmı:
+<article key={item.id} className="group bg-white rounded-3xl p-2 shadow-sm border border-slate-100 hover:shadow-2xl transition-all duration-300">
+  <div className="aspect-video bg-slate-100 rounded-2xl mb-4 overflow-hidden relative">
+    <div className="absolute top-4 left-4 z-10">
+      <span className="bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg text-xs font-bold text-indigo-700 shadow-sm border border-indigo-50">
+        {item.engel_turu}
+      </span>
+    </div>
+    {/* Buraya ileride resim gelecek, şimdilik placeholder renk */}
+    <div className="w-full h-full bg-gradient-to-br from-indigo-50 to-slate-200 group-hover:scale-110 transition-transform duration-500"></div>
+  </div>
+  
+  <div className="px-4 pb-6">
+    <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-indigo-600 transition-colors">{item.title}</h3>
+    <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-6">{item.description}</p>
+    
+    <div className="flex items-center justify-between border-t border-slate-50 pt-4">
+      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{item.ders_konusu}</span>
+      <a href={item.url} target="_blank" className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="arrow-right" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</article>
       ))}
-      {resources.length === 0 && <p className="col-span-full text-center text-gray-500">Aradığınız kriterlere uygun kaynak bulunamadı.</p>}
     </div>
   );
 }
